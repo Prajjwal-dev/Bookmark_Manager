@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookmark Manager</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: url('bg.gif') no-repeat center center;
+            background-size: cover; /* or contain if you want to maintain aspect ratio */
+        }
+        h1 {
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            margin-bottom: 20px;
+        }
+        #logo {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+        #bookmarkForm {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+        #bookmarkForm input {
+            padding: 10px;
+            margin: 10px 0;
+            width: calc(100% - 22px);
+            border: none;
+            border-radius: 5px;
+            outline: none;
+        }
+        #bookmarkForm button {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+        }
+        #bookmarkForm button:hover {
+            background-color: #0056b3;
+        }
+        #bookmarkList {
+            margin-top: 20px;
+            width: 60%;
+        }
+        .bookmark-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            color: #333;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .bookmark-item a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .bookmark-item a:hover {
+            text-decoration: underline;
+        }
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+        footer {
+            margin-top: 20px;
+            color: #000000;
+            font-size: 0.9rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Logo -->
+    <img id="logo" src="logo.png" alt="Logo">
+
+    <h1>Bookmark Your Favorite Websites</h1>
+
+    <div id="bookmarkForm">
+        <input type="text" id="siteName" placeholder="Website Name" required>
+        <input type="text" id="siteUrl" placeholder="Website URL" required>
+        <button onclick="addBookmark()">Add Bookmark</button>
+    </div>
+
+    <div id="bookmarkList">
+        <h2>Your Bookmarks</h2>
+        <div id="bookmarks"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer>Credit: Prajjwal Maharjan</footer>
+
+    <script>
+        // Load bookmarks from local storage on page load
+        document.addEventListener('DOMContentLoaded', loadBookmarks);
+
+        function addBookmark() {
+            const name = document.getElementById('siteName').value;
+            const url = document.getElementById('siteUrl').value;
+
+            // Validate form input
+            if (!name || !url) {
+                alert("Please enter both name and URL.");
+                return;
+            }
+
+            // Bookmark object
+            const bookmark = { name, url };
+
+            // Save to local storage
+            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+            bookmarks.push(bookmark);
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+
+            // Clear input fields
+            document.getElementById('siteName').value = '';
+            document.getElementById('siteUrl').value = '';
+
+            loadBookmarks(); // Refresh bookmarks display
+        }
+
+        function loadBookmarks() {
+            const bookmarksDiv = document.getElementById('bookmarks');
+            bookmarksDiv.innerHTML = ''; // Clear the existing bookmarks
+
+            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+            bookmarks.forEach((bookmark, index) => {
+                // Create a new bookmark div
+                const bookmarkItem = document.createElement('div');
+                bookmarkItem.className = 'bookmark-item';
+
+                // Bookmark link
+                const link = document.createElement('a');
+                link.href = bookmark.url;
+                link.target = '_blank';
+                link.textContent = bookmark.name;
+
+                // Delete button
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.onclick = () => deleteBookmark(index);
+
+                // Append link and button to the bookmark item
+                bookmarkItem.appendChild(link);
+                bookmarkItem.appendChild(deleteBtn);
+
+                // Append the bookmark item to the bookmarks div
+                bookmarksDiv.appendChild(bookmarkItem);
+            });
+        }
+
+        function deleteBookmark(index) {
+            let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+            bookmarks.splice(index, 1);
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+            loadBookmarks();
+        }
+    </script>
+
+</body>
+</html>
